@@ -1,0 +1,50 @@
+void priorityNonPreemptive(){
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n-i-1;j++){
+                if(priority[j] > priority[j+1]){
+                    swap(arrivalTime[j],arrivalTime[j+1]);
+                    swap(burstTime[j],burstTime[j+1]);
+                    swap(priority[j],priority[j+1]);
+                }
+            }
+        }
+        vector<int> waitingTime(n+1),turnAroundTime(n+1);
+        int completedProcess=0;
+        int currentTime=0;
+        vector<int> remainingBurstTime(n+1);
+        for(int i=0;i<n;i++)
+        {
+            remainingBurstTime[i]=burstTime[i];
+        }
+        int totalWaitingTime=0,totalTurnAroundTime=0;
+        int totalBurstTime=burstTime[0];
+        while(completedProcess<n){
+            int mn=INT_MAX;
+            int pos=-1;
+            for(int i=0;i<n;i++){
+                if(arrivalTime[i]<=currentTime && priority[i]<mn && remainingBurstTime[i]>0){
+                    mn=priority[i];
+                    pos=i;
+                }
+            }
+            if(pos!=-1){
+                currentTime+=remainingBurstTime[pos];
+                remainingBurstTime[pos]=0;
+                completedProcess++;
+                turnAroundTime[pos]=currentTime-arrivalTime[pos];
+                totalTurnAroundTime+=turnAroundTime[pos];
+                waitingTime[pos]=turnAroundTime[pos]-burstTime[pos];
+                totalWaitingTime+=waitingTime[pos];
+            }else{
+                currentTime++;
+            }
+        }
+        float averageWaitingTime=float(totalWaitingTime)/(float)n;
+        float averageTurnAroundTime=float(totalTurnAroundTime)/(float)n;
+        cout<<"Process No"<<" "<<"Arrival Time"<<" "<<"Burst Time"<<" "<<"Waiting Time"<<" "<<"TurnAround Time"<<endl;
+        for(int i=0;i<n;i++){
+            cout<<i+1<<"\t\t"<<arrivalTime[i]<<"\t\t"<<burstTime[i]<<"\t\t"<<waitingTime[i]<<"\t\t"<<turnAroundTime[i]<<endl;
+        }
+        cout<<"Average Waiting Time:"<<averageWaitingTime<<endl;
+        cout<<"Average Turn Around Time:"<<averageTurnAroundTime<<endl;
+    }
